@@ -2,7 +2,7 @@ class node:
     def __init__(self, data, parents=None):
         self.parents = parents
         self.data = data
-        
+
     def printar_caminho(self):
         if self.parents != None:
             self.parents.printar_caminho()
@@ -11,7 +11,7 @@ class node:
 initial = node([3,3,0,0,0]) # pos[0] = nº de padres do lado inicial // pos[1] = nº de canibais do lado inicial // pos[2] = nº de padres do lado final // pos[3] = nº de canibais do lado final // pos[4] = lado do barco (0 - lado inicial, 1 - lado final)
 fronteira:node = [] # possibilidades atualmente na memória
 visitados=[] # estados já visitados
-operadores = [(1,0), (1,1), (2,0), (0,2)] #movimento possiveis
+operadores = [(1,0), (1,1), (2,0), (0,1), (0,2)] #movimento possiveis
 
 def testeMeta(estado_atual:node):
     if estado_atual.data[2]==3 and estado_atual.data[3]==3:
@@ -19,22 +19,21 @@ def testeMeta(estado_atual:node):
     else: return False
 
 def mover(estado_atual, m=0, c=0):
-    
     if m + c >2:
         return
     
-    om = 0 #origem dos missionarios
-    oc = 1 #origem dos canibais
-    dm = 2 #destino dos missionarios
-    dc = 3 #destino dos canibais
+    if estado_atual[-1] == 0:
+        om = 0 #origem dos missionarios
+        oc = 1 #origem dos canibais
+        dm = 2 #destino dos missionarios
+        dc = 3 #destino dos canibais
+    else:
+        om = 2 
+        oc = 3 
+        dm = 0 
+        dc = 1 
     
-    if estado_atual[-1] == 1:
-       om = 2 
-       oc = 3 
-       dm = 0 
-       dc = 1 
-    
-    if estado_atual[om]== 0 and estado_atual[oc] == 0 :
+    if estado_atual[om] == 0 and estado_atual[oc] == 0 :
         return
     
     estado_atual[-1] = 1 - estado_atual[-1]
@@ -49,33 +48,35 @@ def mover(estado_atual, m=0, c=0):
         
     return estado_atual
 
-def gerar_grafo(estado_atual:node):
-    filhos:node = []
+def gerar_filhos(estado_atual:node):
+    filhos = []
     for (i,j) in operadores:
         s = mover(estado_atual.data[:], i , j)
         if s == None : continue
         if (s[0]<s[1] and s[0]>0) or (s[2]<s[3] and s[2]>0): continue
         if s in visitados: continue
-        filhos.append(node(s,estado_atual))
+        if estado_atual.data[0:4] == s[0:4]: continue
+        filhos.append(s)
     return filhos
 
-def bfs(estado):
+def bfs(estado:node):
     fronteira.append(estado)
     while len(fronteira) > 0:
         elemento = fronteira[0]
         if testeMeta(elemento):
             break
         else:
-            v = gerar_grafo(elemento)
+            v = gerar_filhos(elemento)
             if len(v) != 0:
                 for i in range(len(v)):
-                    visitados.append(v[i].data)
-                    fronteira.append(v[i])
+                    if i in fronteira:continue
+                    fronteira.append(node(v[i],elemento))
+                    visitados.append(v[i])
             else:
                 fronteira.pop(0)
     else:
         print("Caminho não encontrado")
-    return elemento
+    return fronteira
 
 result=bfs(initial)
-result.printar_caminho()
+result[0].printar_caminho()
