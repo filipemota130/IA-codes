@@ -1,14 +1,15 @@
 class node:
-    def __init__(self, data, parents=None):
+    def __init__(self, data, move, parents=None):
         self.parents = parents
         self.data = data
+        self.move = move
 
     def printar_caminho(self):
         if self.parents != None:
             self.parents.printar_caminho()
-        print(self.data)
+        print(str(self.data)+" "+self.move)
         
-initial = node([3,3,0,0,0]) # pos[0] = nº de padres do lado inicial // pos[1] = nº de canibais do lado inicial // pos[2] = nº de padres do lado final // pos[3] = nº de canibais do lado final // pos[4] = lado do barco (0 - lado inicial, 1 - lado final)
+initial = node([3,3,0,0,0],"0:0") # pos[0] = nº de padres do lado inicial // pos[1] = nº de canibais do lado inicial // pos[2] = nº de padres do lado final // pos[3] = nº de canibais do lado final // pos[4] = lado do barco (0 - lado inicial, 1 - lado final)
 fronteira:node = [] # possibilidades atualmente na memória
 visitados=[] # estados já visitados
 operadores = [(1,0), (1,1), (2,0), (0,1), (0,2)] #movimento possiveis
@@ -56,7 +57,7 @@ def gerar_filhos(estado_atual:node):
         if (s[0]<s[1] and s[0]>0) or (s[2]<s[3] and s[2]>0): continue
         if s in visitados: continue
         if estado_atual.data[0:4] == s[0:4]: continue
-        filhos.append(s)
+        filhos.append((s,str(i)+":"+str(j)))
     return filhos
 
 def bfs(estado:node):
@@ -70,8 +71,8 @@ def bfs(estado:node):
             if len(v) != 0:
                 for i in range(len(v)):
                     if i in fronteira:continue
-                    fronteira.append(node(v[i],elemento))
-                    visitados.append(v[i])
+                    fronteira.append(node(v[i][0],v[i][1],elemento))
+                    visitados.append(v[i][0])
             else:
                 fronteira.pop(0)
     else:
