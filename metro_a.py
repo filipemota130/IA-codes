@@ -6,7 +6,6 @@ class node:
         self.acumulado = 0
         self.ultima_linha = ""
 
-
 e1 = node(0, [0, 11, 20, 27, 40, 43, 39, 28, 18, 10, 18, 30, 30, 32])
 e2 = node(1, [11, 0, 9, 16, 29, 32, 28, 19, 11, 4, 17, 23, 21, 24])
 e3 = node(2, [20, 9, 0, 7, 20, 22, 19, 15, 10, 11, 21, 21, 13, 18])
@@ -39,7 +38,6 @@ e14.vizinhos = [(e13, "Vd")]
 
 visitados = []
 
-
 def buscar(origem: node, destino: node):
     no_pai: node = origem
     caminho = [origem]
@@ -47,8 +45,7 @@ def buscar(origem: node, destino: node):
     while True:
         if no_pai.estacao == destino.estacao:
             for i in range(0, len(caminho)):
-                print("Estacao: ", caminho[i].estacao+1,
-                      "custo acumulado: ", caminho[i].acumulado)
+                print("Estacao: ", caminho[i].estacao+1,"custo acumulado: ", caminho[i].acumulado)
             print("Fim")
             break
         else:
@@ -61,11 +58,11 @@ def buscar(origem: node, destino: node):
                     visitados.append(i[0])
                     i[0].acumulado = no_pai.acumulado + i[0].distancias[no_pai.estacao] + i[0].distancias[destino.estacao]
                     if i[1] != no_pai.ultima_linha and no_pai.ultima_linha != '':
-                        i[0].acumulado += 4
+                        i[0].acumulado += 2 #4 minutos convertidos para km na velocidade de 30km/h => 30km/h = 500m/min => 4min = 2000m = 2km
                     if i[0].acumulado < melhor.acumulado:
                         melhor = i[0]
                         melhor.ultima_linha = i[1]
             caminho.append(melhor)
             no_pai = melhor
 
-buscar(e1, e6)
+buscar(e1, e12)
